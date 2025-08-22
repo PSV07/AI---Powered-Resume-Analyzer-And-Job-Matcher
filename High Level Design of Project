@@ -1,0 +1,88 @@
+📐 High Level Design (HLD)
+==============================
+
+1️⃣ System Overview
+
+The system takes a Resume (PDF/DOC) and a Job Description (JD) as inputs, applies AI/NLP models to calculate a match score, extracts missing skills, and provides improvement suggestions. It is deployed on cloud infrastructure for scalability.
+__________________________________________________________________________________________________________________________________________
+2️⃣ Architecture Diagram (Conceptual Flow)
+___________________________________________________________________________________________________________________________________________
+3️⃣ Main Components
+
+🔹 Frontend Layer
+
+Tech: React / Angular
+Features:
+Upload Resume (PDF/DOC).
+Paste Job Description text.
+Show Match Score (0–100%), missing skills, suggestions.
+Dashboard for recruiters (upload multiple resumes).
+
+🔹 Backend Layer (Spring Boot – Java)
+
+Acts as API Gateway.
+Responsibilities:
+Handle requests (resume upload, JD submission).
+Store & retrieve metadata from DB.
+Communicate with ML microservice via REST API.
+Manage authentication (JWT, OAuth).
+
+🔹 ML Microservice (Python + FastAPI/Flask)
+
+Independent service for AI/NLP tasks.
+Responsibilities:
+Parse resumes (extract text using PyMuPDF/pdfminer).
+Extract job skills using NER (spaCy/HuggingFace).
+Generate embeddings (SBERT / Sentence Transformers).
+Compute similarity (cosine similarity).
+Identify missing keywords/skills.
+
+🔹 AI/NLP Engine
+
+Models Used:
+Resume & JD Embeddings → Sentence-BERT.
+Named Entity Recognition (NER) → spaCy (for extracting skills, education, companies).
+
+Logic:
+Vectorize Resume & JD.
+Compare similarity.
+Suggest missing skills.
+
+🔹 Database Layer
+
+PostgreSQL (structured data) or MongoDB (if storing JSON resumes).
+
+Tables/Collections:
+users → user info.
+resumes → resume metadata + S3 link.
+job_descriptions → JD text.
+match_results → scores, missing skills, timestamp.
+
+🔹 Cloud Infrastructure
+
+AWS (example):
+S3 → Store resumes securely.
+EC2 / Elastic Beanstalk → Host Spring Boot backend.
+Lambda / EC2 → Run ML microservice.
+RDS → PostgreSQL DB.
+CloudWatch → Monitoring & logs.
+__________________________________________________________________________________________________________________________________________
+
+4️⃣ Data Flow
+
+User uploads resume (PDF) + inputs JD → Frontend.
+Spring Boot API stores metadata in DB + sends resume to S3.
+Backend calls ML microservice with resume + JD text.
+ML service parses resume, extracts skills, computes similarity score.
+ML service returns results → Backend → Frontend.
+Frontend shows score + suggestions to user.
+__________________________________________________________________________________________________________________________________________
+
+5️⃣ Non-Functional Requirements (NFRs)
+
+Scalability → Cloud-based microservice architecture.
+Security → Encrypt resumes, JWT for auth, HTTPS APIs.
+Performance → Asynchronous calls between backend & ML service.
+Maintainability → Modular (Frontend ↔ Backend ↔ ML service).
+Portability → Deployable on AWS / Azure / GCP.
+__________________________________________________________________________________________________________________________________________
