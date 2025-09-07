@@ -1,0 +1,19 @@
+from fastapi import FastAPI, UploadFile, File
+import uvicorn
+
+app = FastAPI(title="AI Resume Analyzer - ML Service")
+
+# Root endpoint
+@app.get("/")
+def read_root():
+    return {"message": "ML Service is running 🚀"}
+
+# Example: upload resume (PDF/DOCX)
+@app.post("/analyze-resume/")
+async def analyze_resume(file: UploadFile = File(...)):
+    # 🔹 Here we will later add parsing + ML logic
+    contents = await file.read()
+    return {"filename": file.filename, "size": len(contents)}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
